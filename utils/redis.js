@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import { createClient } from 'redis';
 
+
 /**
  * Redis client wrapper.
  */
