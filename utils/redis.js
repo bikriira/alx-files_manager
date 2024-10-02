@@ -1,15 +1,9 @@
 import { promisify } from 'util';
 import { createClient } from 'redis';
 
-
-/**
- * A class representing a Redis client.
- */
 class RedisClient {
-  /**
-   * Initializes a new instance of RedisClient.
-   */
-class RedisClient {
+   /** Initializes a new instance of RedisClient
+   **/
   constructor() {
     this.client = createClient();
     this.isClientConnected = true;
@@ -43,4 +37,3 @@ class RedisClient {
 
 export const redisClient = new RedisClient();
 export default redisClient;
-
