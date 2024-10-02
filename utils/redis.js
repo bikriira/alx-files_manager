@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import { createClient } from 'redis';
 
+
 /**
  * A class representing a Redis client.
  */
@@ -13,7 +14,7 @@ class RedisClient {
     this.connectionActive = true;
 
     this.client.on('error', (err) => {
-      console.error('Failed to connect to Redis client:', err.message || err.toString());
+      console.error('Redis client failed to connect:', err.message || err.toString());
       this.connectionActive = false;
     });
 
