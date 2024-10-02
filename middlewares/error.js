@@ -21,13 +21,13 @@ export class APIError extends Error {
  * @param {NextFunction} next The next middleware function.
  */
 export const errorResponse = (err, req, res, next) => {
-  const fallbackMsg = `Unable to process ${req.url}`;
+  const defaultMsg = `Failed to process ${req.url}`;
 
   if (err instanceof APIError) {
-    res.status(err.code).json({ error: err.message || fallbackMsg });
+    res.status(err.code).json({ error: err.message || defaultMsg });
     return;
   }
   res.status(500).json({
-    error: err ? err.message || err.toString() : fallbackMsg,
+    error: err ? err.message || err.toString() : defaultMsg,
   });
 };

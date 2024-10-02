@@ -8,25 +8,25 @@ import dbClient from './db';
 import redisClient from './redis';
 
 /**
- * Retrieves the user based on the Authorization header from the provided request object.
+ * ***Retrieves*** the user from the Authorization header in the given request object.
  * @param {Request} req The Express request object.
  * @returns {Promise<{_id: ObjectId, email: string, password: string}>}
  */
-export const fetchUserFromAuthorization = async (req) => {
-  const authHeader = req.headers.authorization || null;
+export const getUserFromAuthorization = async (req) => {
+  const authorization = req.headers.authorization || null;
 
-  if (!authHeader) {
+  if (!authorization) {
     return null;
   }
-  const authParts = authHeader.split(' ');
+  const authorizationParts = authorization.split(' ');
 
-  if (authParts.length !== 2 || authParts[0] !== 'Basic') {
+  if (authorizationParts.length !== 2 || authorizationParts[0] !== 'Basic') {
     return null;
   }
-  const decodedToken = Buffer.from(authParts[1], 'base64').toString();
-  const separatorIndex = decodedToken.indexOf(':');
-  const email = decodedToken.substring(0, separatorIndex);
-  const password = decodedToken.substring(separatorIndex + 1);
+  const token = Buffer.from(authorizationParts[1], 'base64').toString();
+  const sepPos = token.indexOf(':');
+  const email = token.substring(0, sepPos);
+  const password = token.substring(sepPos + 1);
   const user = await (await dbClient.usersCollection()).findOne({ email });
 
   if (!user || sha1(password) !== user.password) {
@@ -36,11 +36,11 @@ export const fetchUserFromAuthorization = async (req) => {
 };
 
 /**
- * Retrieves the user based on the X-Token header from the provided request object.
+ * ***Retrieves*** the user from the X-Token header in the given request object.
  * @param {Request} req The Express request object.
  * @returns {Promise<{_id: ObjectId, email: string, password: string}>}
  */
-export const fetchUserFromXToken = async (req) => {
+export const getUserFromXToken = async (req) => {
   const token = req.headers['x-token'];
 
   if (!token) {
@@ -56,6 +56,6 @@ export const fetchUserFromXToken = async (req) => {
 };
 
 export default {
-  fetchUserFromAuthorization: async (req) => fetchUserFromAuthorization(req),
-  fetchUserFromXToken: async (req) => fetchUserFromXToken(req),
+  getUserFromAuthorization: async (req) => getUserFromAuthorization(req),
+  getUserFromXToken: async (req) => getUserFromXToken(req),
 };
