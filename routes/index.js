@@ -1,10 +1,11 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+
 const AppController = require('../controllers/AppController');
 const UsersController = require('../controllers/UsersController');
 const AuthController = require('../controllers/AuthController');
 const FilesController = require('../controllers/FilesController');
 
+const router = express.Router();
 
 // Status and Stats
 router.get('/status', AppController.getStatus);
