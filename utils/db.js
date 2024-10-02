@@ -1,40 +1,49 @@
-import { MongoClient } from 'mongodb';
+import mongodb from 'mongodb';
+// eslint-disable-next-line no-unused-vars
+import Collection from 'mongodb/lib/collection';
+import envLoader from './env_loader';
 
-const host = process.env.DB_HOST || 'localhost';
-const port = process.env.DB_PORT || 27017;
-const database = process.env.DB_DATABASE || 'files_manager';
-const url = `mongodb://${host}:${port}/`;
-
+/**
+ * MongoDB client for files_manager database.
+ */
 class DBClient {
   constructor() {
-    this.db = null;
-    MongoClient.connect(url, { useUnifiedTopology: true }, (error, client) => {
-      if (error) console.log(error);
-      this.db = client.db(database);
-      this.db.createCollection('users');
-      this.db.createCollection('files');
-    });
+    envLoader();
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || 27017;
+    const database = process.env.DB_DATABASE || 'files_manager';
+    const dbURL = `mongodb://${host}:${port}/${database}`;
+    
+    // Initialize MongoDB client with unified topology
+    this.client = new mongodb.MongoClient(dbURL, { useUnifiedTopology: true });
+    this.client.connect();
   }
 
+  // Check if connection is active
   isAlive() {
-    return !!this.db;
+    return this.client.isConnected();
   }
 
+  // Get number of users
   async nbUsers() {
-    return this.db.collection('users').countDocuments();
+    return this.client.db().collection('users').countDocuments();
   }
 
-  async getUser(query) {
-    console.log('QUERY IN DB.JS', query);
-    const user = await this.db.collection('users').findOne(query);
-    console.log('GET USER IN DB.JS', user);
-    return user;
-  }
-
+  // Get number of files
   async nbFiles() {
-    return this.db.collection('files').countDocuments();
+    return this.client.db().collection('files').countDocuments();
+  }
+
+  // Get users collection
+  async usersCollection() {
+    return this.client.db().collection('users');
+  }
+
+  // Get files collection
+  async filesCollection() {
+    return this.client.db().collection('files');
   }
 }
 
-const dbClient = new DBClient();
+export const dbClient = new DBClient();
 export default dbClient;
